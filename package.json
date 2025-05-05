@@ -1,13 +1,12 @@
 {
   "name": "movie-streaming-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "API para plataforma de streaming de películas con autenticación y perfiles",
+  "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "mkdir -p build && cp -r src/* build/ && npm install --production",
-    "deploy": "npm run build && node build/app.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -19,7 +18,6 @@
   ],
   "author": "",
   "license": "ISC",
-  "description": "API para plataforma de streaming de películas con autenticación y perfiles",
   "dependencies": {
     "axios": "^1.6.7",
     "bcryptjs": "^3.0.2",
