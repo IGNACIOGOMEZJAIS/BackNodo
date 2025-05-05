@@ -8,9 +8,9 @@ const cors = require('cors');
 
 
 
-const authRoutes = require('./routes/authRoutes');
-const profileRoutes = require('./routes/profileRoutes');
-const movieRoutes = require('./routes/movieRoutes');
+const authRoutes = require('./src/routes/authRoutes');
+const profileRoutes = require('./src/routes/profileRoutes');
+const movieRoutes = require('./src/routes/movieRoutes');
 
 const app = express();
 
