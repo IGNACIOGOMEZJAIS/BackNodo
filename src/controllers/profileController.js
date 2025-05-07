@@ -165,6 +165,19 @@ exports.addToWatchlist = async (req, res) => {
     }
 };
 
+exports.getProfilesByOwner = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const owner = await User.findById(decoded.id);
+
+        const profiles = await Profile.find({ owner: owner._id });
+        res.status(200).json({ status: 'success', data: { profiles } });
+    } catch (err) {
+        res.status(400).json({ status: 'error', message: err.message });
+    }
+};
+
 // Eliminar película de la watchlist
 exports.removeFromWatchlist = async (req, res) => {
     try {
