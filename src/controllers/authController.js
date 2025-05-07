@@ -32,7 +32,7 @@ exports.register = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({
                 status: 'error',
-                message: 'El usuario ya existe'
+                message: 'El Email ya fue registrado'
             });
         }
 
