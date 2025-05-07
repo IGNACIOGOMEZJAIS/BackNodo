@@ -28,6 +28,23 @@ exports.register = async (req, res) => {
             });
         }
 
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'El usuario ya existe'
+            });
+        }
+
+        //verificar que el usuario no exista
+        const existingUsername = await User.findOne({ username });
+        if (existingUsername) {
+            return res.status(400).json({
+                status: 'error',
+                message: 'El username ya existe'
+            });
+        }
+
         // 2. Crear usuario con rol de owner
         const user = await User.create({
             username,
