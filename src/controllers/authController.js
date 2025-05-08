@@ -55,6 +55,7 @@ exports.register = async (req, res) => {
 
         // 3. Crear perfil principal
         await Profile.create({
+            owner: user._id,
             user: user._id,
             name: username,
             type: 'owner'

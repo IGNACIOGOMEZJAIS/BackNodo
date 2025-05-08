@@ -167,19 +167,6 @@ exports.addToWatchlist = async (req, res) => {
     }
 };
 
-exports.getProfilesByOwner = async (req, res) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const owner = await User.findById(decoded.id);
-
-
-        const profiles = await Profile.find({ owner: owner._id });
-        res.status(200).json({ status: 'success', data: { profiles } });
-    } catch (err) {
-        res.status(400).json({ status: 'error', message: err.message });
-    }
-};
 
 exports.getProfiles = async (req, res) => {
     try {
@@ -212,24 +199,6 @@ exports.getProfiles = async (req, res) => {
   };
   
 
-exports.getProfileByStandardOrChild = async (req, res) => {
-    try {
-        const token = req.headers.authorization?.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const account = await User.findById(decoded.id);
-
-        const allowedRoles = ['68123f3a4ac4061660a2d06c', '68123f3a4ac4061660a2d06d'];
-        if (allowedRoles.includes(account.role._id.toString())) {
-            const profile = await Profile.find({ user: account._id });
-            return res.status(200).json({ status: 'success', data: { profiles: profile } });
-        } else {
-            res.status(400).json({ status: 'error', message: 'No tienes permisos para ver el perfil' });
-        }
-
-    } catch (err) {
-        res.status(400).json({ status: 'error', message: err.message });
-    }
-};
 
 // Eliminar película de la watchlist
 exports.removeFromWatchlist = async (req, res) => {
