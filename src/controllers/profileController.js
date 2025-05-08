@@ -1,5 +1,7 @@
 const Profile = require('../models/Profile');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
+
 
 // Middleware para verificar permisos
 const checkProfilePermissions = async (userId, profileId) => {
