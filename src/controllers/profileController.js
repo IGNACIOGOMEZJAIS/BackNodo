@@ -174,7 +174,7 @@ exports.getProfilesByOwner = async (req, res) => {
         const owner = await User.findById(decoded.id);
 
 
-        const profiles = await Profile.find({ user: owner._id });
+        const profiles = await Profile.find({ owner: owner._id });
         res.status(200).json({ status: 'success', data: { profiles } });
     } catch (err) {
         res.status(400).json({ status: 'error', message: err.message });

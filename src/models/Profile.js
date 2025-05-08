@@ -6,6 +6,10 @@ const profileSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true
+    },
     name: {
         type: String,
         required: [true, 'El nombre es requerido'],

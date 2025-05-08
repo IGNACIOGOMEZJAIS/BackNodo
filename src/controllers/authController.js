@@ -72,7 +72,7 @@ exports.register = async (req, res) => {
 
 exports.createProfile = async (req, res) => {
     try {
-        const { username, email, password, roleName, dateOfBirth } = req.body;
+        const { username, email, password, roleName } = req.body;
 
         // 1. Verificar que el rol solicitado sea válido
         const allowedRoles = ['standard_profile', 'child_profile'];
