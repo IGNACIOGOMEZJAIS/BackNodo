@@ -29,25 +29,25 @@ const checkProfilePermissions = async (userId, profileId) => {
 // Obtener todos los perfiles (solo para account_owner)
 exports.getAllProfiles = async (req, res) => {
     try {
-      const profiles = await Profile.find()
-        .populate('user', 'username email')
-        .select('-watchHistory -watchlist');
-  
-      const total = await Profile.countDocuments();
-  
-      res.status(200).json({
-        status: 'success',
-        results: profiles.length,
-        total,
-        data: { profiles }
-      });
+        const profiles = await Profile.find()
+            .populate('user', 'username email')
+            .select('-watchHistory -watchlist');
+
+        const total = await Profile.countDocuments();
+
+        res.status(200).json({
+            status: 'success',
+            results: profiles.length,
+            total,
+            data: { profiles }
+        });
     } catch (error) {
-      res.status(500).json({
-        status: 'error',
-        message: error.message
-      });
+        res.status(500).json({
+            status: 'error',
+            message: error.message
+        });
     }
-  };
+};
 
 // Obtener un perfil específico
 exports.getProfile = async (req, res) => {
@@ -141,7 +141,7 @@ exports.addToWatchlist = async (req, res) => {
         }
 
         // Verificar si la película ya está en la watchlist
-        const alreadyInWatchlist = profile.watchlist.some(item => 
+        const alreadyInWatchlist = profile.watchlist.some(item =>
             item.movie.toString() === movieId
         );
 
@@ -181,13 +181,63 @@ exports.getProfilesByOwner = async (req, res) => {
     }
 };
 
+exports.getProfiles = async (req, res) => {
+    try {
+      const token = req.headers.authorization?.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decoded.id).populate('role'); // Asegúrate de que role tenga _id y name
+  
+      const roleId = user.role._id.toString();
+  
+      const OWNER_ROLE_ID = '68123f3a4ac4061660a2d06b';     // Owner
+      const STANDARD_ROLE_ID = '68123f3a4ac4061660a2d06c';  // Standard
+      const CHILD_ROLE_ID = '68123f3a4ac4061660a2d06d';     // Child
+  
+      let profiles = [];
+  
+      if (roleId === OWNER_ROLE_ID) {
+        // Owner ve todos sus perfiles
+        profiles = await Profile.find({ owner: user._id });
+      } else if ([STANDARD_ROLE_ID, CHILD_ROLE_ID].includes(roleId)) {
+        // Standard o Child solo ven su perfil
+        profiles = await Profile.find({ user: user._id });
+      } else {
+        return res.status(403).json({ status: 'error', message: 'No tienes permisos para ver los perfiles' });
+      }
+  
+      res.status(200).json({ status: 'success', data: { profiles } });
+    } catch (err) {
+      res.status(400).json({ status: 'error', message: err.message });
+    }
+  };
+  
+
+exports.getProfileByStandardOrChild = async (req, res) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const account = await User.findById(decoded.id);
+
+        const allowedRoles = ['68123f3a4ac4061660a2d06c', '68123f3a4ac4061660a2d06d'];
+        if (allowedRoles.includes(account.role._id.toString())) {
+            const profile = await Profile.find({ user: account._id });
+            return res.status(200).json({ status: 'success', data: { profiles: profile } });
+        } else {
+            res.status(400).json({ status: 'error', message: 'No tienes permisos para ver el perfil' });
+        }
+
+    } catch (err) {
+        res.status(400).json({ status: 'error', message: err.message });
+    }
+};
+
 // Eliminar película de la watchlist
 exports.removeFromWatchlist = async (req, res) => {
     try {
         const { profile } = await checkProfilePermissions(req.user.id, req.params.id);
 
         const movieId = req.params.movieId;
-        profile.watchlist = profile.watchlist.filter(item => 
+        profile.watchlist = profile.watchlist.filter(item =>
             item.movie.toString() !== movieId
         );
 
@@ -219,7 +269,7 @@ exports.addToWatchHistory = async (req, res) => {
         }
 
         // Actualizar o agregar al historial
-        const historyIndex = profile.watchHistory.findIndex(item => 
+        const historyIndex = profile.watchHistory.findIndex(item =>
             item.movie.toString() === movieId
         );
 

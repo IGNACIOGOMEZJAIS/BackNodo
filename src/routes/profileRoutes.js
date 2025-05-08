@@ -8,7 +8,8 @@ router.use('/', authenticateToken);
 
 // Rutas básicas CRUD
 router.get('/', profileController.getAllProfiles);
-router.get('/getmyprofiles', profileController.getProfilesByOwner);
+router.get('/getmyprofiles', profileController.getProfiles);
+
 router.get('/:id', profileController.getProfile);
 router.patch('/:id', profileController.updateProfile);
 router.delete('/:id', profileController.deleteProfile);
