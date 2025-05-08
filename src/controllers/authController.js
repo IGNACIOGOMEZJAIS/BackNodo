@@ -73,7 +73,7 @@ exports.register = async (req, res) => {
 
 exports.createProfile = async (req, res) => {
     try {
-        const { username, email, password, roleName } = req.body;
+        const { username, email, password, roleName} = req.body;
 
         // 1. Verificar que el rol solicitado sea válido
         const allowedRoles = ['standard_profile', 'child_profile'];
@@ -91,7 +91,7 @@ exports.createProfile = async (req, res) => {
         };
         const profileType = profileTypeMap[roleName];
 
-        // 3. Verificar que quien crea el perfil es un account_owner
+        // 3. Verificar autorización
         const authHeader = req.headers.authorization;
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
             return res.status(401).json({
@@ -101,25 +101,31 @@ exports.createProfile = async (req, res) => {
         }
 
         const token = authHeader.split(' ')[1];
-        let ownerUser;
-        try {
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            ownerUser = await User.findById(decoded.id).populate('role');
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const ownerUser = await User.findById(decoded.id).populate('role');
 
-            if (!ownerUser || ownerUser.role.name !== 'account_owner') {
-                return res.status(403).json({
-                    status: 'error',
-                    message: 'Solo un account_owner puede crear perfiles adicionales'
-                });
-            }
-        } catch (error) {
-            return res.status(401).json({
+        if (!ownerUser || ownerUser.role.name !== 'account_owner') {
+            return res.status(403).json({
                 status: 'error',
-                message: 'Token inválido o expirado'
+                message: 'Solo un account_owner puede crear perfiles adicionales'
             });
         }
 
-        // 4. Obtener el rol solicitado
+        // 4. Validar duplicados de username y email
+        const [existingEmail, existingUsername] = await Promise.all([
+            User.findOne({ email }),
+            User.findOne({ username })
+        ]);
+
+        if (existingEmail) {
+            return res.status(400).json({ status: 'error', message: 'El email ya está registrado' });
+        }
+
+        if (existingUsername) {
+            return res.status(400).json({ status: 'error', message: 'El username ya está en uso' });
+        }
+
+        // 5. Obtener el rol solicitado
         const role = await Role.findOne({ name: roleName });
         if (!role) {
             return res.status(500).json({
@@ -128,7 +134,7 @@ exports.createProfile = async (req, res) => {
             });
         }
 
-        // 5. Crear usuario con el rol especificado
+        // 6. Crear el usuario
         const user = await User.create({
             username,
             email,
@@ -136,13 +142,12 @@ exports.createProfile = async (req, res) => {
             role: role._id
         });
 
-        // 6. Crear perfil vinculado al owner
+        // 7. Crear el perfil
         await Profile.create({
             user: user._id,
             owner: ownerUser._id,
             name: username,
             type: profileType,
-            dateOfBirth: profileType === 'child' ? dateOfBirth : undefined
         });
 
         createSendToken(user, 201, res);
