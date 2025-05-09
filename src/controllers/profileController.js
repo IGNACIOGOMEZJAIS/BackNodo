@@ -1,4 +1,5 @@
 const Profile = require('../models/Profile');
+const Role = require('../models/Role');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -92,8 +93,8 @@ exports.updateProfile = async (req, res) => {
         });
 
         // Actualizar el rol si viene el roleId
-        if (req.body.role) {
-            const role = await Role.findById(req.body.role);
+        if (req.body.type) {
+            const role = await Role.findById(req.body.type);
             if (!role) {
                 return res.status(400).json({ status: 'error', message: 'Rol no válido' });
             }
