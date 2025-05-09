@@ -147,6 +147,7 @@ exports.createProfile = async (req, res) => {
             user: user._id,
             owner: ownerUser._id,
             name: username,
+            email: email,
             type: profileType,
         });
 
