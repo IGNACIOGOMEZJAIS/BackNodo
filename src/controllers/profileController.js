@@ -93,8 +93,8 @@ exports.updateProfile = async (req, res) => {
         });
 
         // Actualizar el rol si viene el roleId
-        if (req.body.type) {
-            const role = await Role.findById(req.body.type);
+        if (req.body.role) {
+            const role = await Role.findById(req.body.role);
             if (!role) {
                 return res.status(400).json({ status: 'error', message: 'Rol no válido' });
             }
