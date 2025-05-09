@@ -74,21 +74,46 @@ exports.updateProfile = async (req, res) => {
         const restrictedFields = ['user', 'owner'];
         restrictedFields.forEach(field => delete req.body[field]);
 
+        // Actualizar datos del perfil
         Object.assign(profile, req.body);
         await profile.save();
+
+        // Buscar y actualizar el usuario relacionado
+        const user = await User.findById(profile.user);
+        if (!user) {
+            return res.status(404).json({ status: 'error', message: 'Usuario relacionado no encontrado' });
+        }
+
+        const userFields = ['username', 'email', 'password']; // campos actualizables
+        userFields.forEach(field => {
+            if (req.body[field]) {
+                user[field] = req.body[field];
+            }
+        });
+
+        // Actualizar el rol si viene el roleId
+        if (req.body.role) {
+            const role = await Role.findById(req.body.role);
+            if (!role) {
+                return res.status(400).json({ status: 'error', message: 'Rol no válido' });
+            }
+            user.role = role._id;
+        }
+
+        await user.save();
 
         res.status(200).json({
             status: 'success',
             data: { profile }
         });
     } catch (error) {
+        console.error('Error en updateProfile:', error);
         res.status(400).json({
             status: 'error',
             message: error.message
         });
     }
 };
-
 // Eliminar perfil
 exports.deleteProfile = async (req, res) => {
     try {
