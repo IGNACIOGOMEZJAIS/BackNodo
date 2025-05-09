@@ -76,13 +76,7 @@ exports.createProfile = async (req, res) => {
         const { username, email, password, type: roleName} = req.body;
 
         // 1. Verificar que el rol solicitado sea válido
-        const allowedRoles = ['standard_profile', 'child_profile'];
-        if (!allowedRoles.includes(roleName)) {
-            return res.status(400).json({
-                status: 'error',
-                message: 'Rol inválido. Los roles permitidos son: standard_profile, child_profile'
-            });
-        }
+       
 
         // 2. Mapear el roleName al tipo de perfil
         const profileTypeMap = {
