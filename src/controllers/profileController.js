@@ -71,17 +71,8 @@ exports.updateProfile = async (req, res) => {
     try {
         const { profile } = await checkProfilePermissions(req.user.id, req.params.id);
 
-        // Campos que no se pueden actualizar
-        const restrictedFields = ['user', 'owner', 'type'];
+        const restrictedFields = ['user', 'owner'];
         restrictedFields.forEach(field => delete req.body[field]);
-
-        // Validar campos específicos para perfil infantil
-        if (profile.type === 'child_profile') {
-            if (req.body.parentalControls) {
-                Object.assign(profile.parentalControls, req.body.parentalControls);
-                delete req.body.parentalControls;
-            }
-        }
 
         Object.assign(profile, req.body);
         await profile.save();
