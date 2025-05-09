@@ -24,6 +24,14 @@ const profileSchema = new mongoose.Schema({
         enum: ['owner', 'standard', 'child'],
         required: true
     },
+    email: {
+        type: String,
+        required: [true, 'El email es requerido'],
+        unique: true,
+        trim: true,
+        lowercase: true,
+        match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Por favor ingrese un email válido']
+    },
     
 }, {
     timestamps: true // ✅ Correctamente ubicado
