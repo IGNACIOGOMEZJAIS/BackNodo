@@ -21,7 +21,7 @@ const profileSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['owner', 'standard_profile', 'child_profile'],
+        enum: ['owner', 'standard', 'child'],
         required: true
     },
     email: {
