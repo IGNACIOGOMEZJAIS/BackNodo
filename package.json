@@ -1,0 +1,49 @@
+{
+  "name": "movie-streaming-api",
+  "version": "1.0.0",
+  "description": "API para streaming de películas",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js",
+    "test": "jest --watchAll",
+    "build": "mkdir -p build && cp -r src/* build/ && cp package.json build/ && npm install --production --prefix build",
+    "deploy": "npm run build && cd build && node app.js",
+    "lint": "eslint src/"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": ">=6.0.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.2.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.10.1",
+    "morgan": "^1.10.0",
+    "movie-streaming-api": "file:",
+    "winston": "^3.17.0",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "latest",
+    "eslint-plugin-import": "^2.29.1",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.0",
+    "supertest": "^6.3.4"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  }
+}
